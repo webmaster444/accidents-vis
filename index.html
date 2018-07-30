@@ -131,7 +131,7 @@ var svg = d3.select(wrapper).append("svg")
   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
       .attr('class','xaxis')
-      .call(d3.axisBottom(x).tickSize(-height));
+      .call(d3.axisBottom(x).ticks(4).tickSize(-height).tickSizeOuter(0));
 
   // add the y Axis
   svg.append("g").attr('class','yaxis')
