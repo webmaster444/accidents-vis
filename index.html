@@ -6,6 +6,10 @@
 
 </style>
 <body>    	
+  <div id="chart1"></div>
+  <div id="chart2"></div>
+  <div id="chart3"></div>
+  <div id="chart4"></div>
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script src="http://d3js.org/queue.v1.min.js"></script>
 <script>
@@ -37,11 +41,17 @@
       city2_data.push(tmp1);
     });
 
-    draw_chart(city1_data);
-    draw_chart(city2_data);
+    var x = d3.max([d3.max(city1_data.map(function(d){
+      return parseInt(d.value);
+    })),d3.max(city2_data.map(function(d){
+      return d.value;
+    }))]);
+    
+    draw_chart(city1_data,'#chart1',x);
+    draw_chart(city2_data,'#chart2',x);
   }
 
-function draw_chart(data,wrapper){
+function draw_chart(data,wrapper,maxvalue){
 // set the dimensions and margins of the graph
 var margin = {top: 20, right: 20, bottom: 30, left: 80},
     width = 960 - margin.left - margin.right,
@@ -58,7 +68,7 @@ var x = d3.scaleLinear()
 // append the svg object to the body of the page
 // append a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
-var svg = d3.select("body").append("svg")
+var svg = d3.select(wrapper).append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
@@ -71,7 +81,7 @@ var svg = d3.select("body").append("svg")
   });
 
   // Scale the range of the data in the domains
-  x.domain([0, d3.max(data, function(d){ return d.value; })])
+  x.domain([0, maxvalue])
   y.domain(data.map(function(d) { return d.key; }));
   //y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
@@ -81,9 +91,11 @@ var svg = d3.select("body").append("svg")
     .enter().append("rect")
       .attr("class", "bar")
       //.attr("x", function(d) { return x(d.value); })
-      .attr("width", function(d) {return x(d.value); } )
       .attr("y", function(d) { return y(d.key); })
-      .attr("height", y.bandwidth());
+      .attr("height", y.bandwidth())
+      .transition()
+      .duration(2000)
+      .attr("width", function(d) {return x(d.value); } )          
 
   // add the x Axis
   svg.append("g")
