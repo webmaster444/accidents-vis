@@ -1,0 +1,17 @@
+{  
+   "token":{  
+      "nis":11002,
+      "gemeente":"Antwerpen",
+      "gemeente_nl":"Antwerpen",
+      "gemeente_fr":"Anvers"
+   },
+   "data":{  
+      "Motorfiets":"371",
+      "Bus":"82",
+      "Andere":"52",
+      "Fiets":"935",
+      "Vrachtwagen":"68",
+      "Wagen":"1063",
+      "Voetganger":"369"
+   }
+}

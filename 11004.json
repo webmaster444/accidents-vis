@@ -1,0 +1,17 @@
+{  
+   "token":{  
+      "nis":11004,
+      "gemeente":"Boechout",
+      "gemeente_nl":"Boechout",
+      "gemeente_fr":"Boechout"
+   },
+   "data":{  
+      "Motorfiets":"2",
+      "Bus":"5",
+      "Andere":"0",
+      "Fiets":"13",
+      "Vrachtwagen":"1",
+      "Wagen":"30",
+      "Voetganger":"1"
+   }
+}

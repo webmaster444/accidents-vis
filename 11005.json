@@ -1,0 +1,17 @@
+{  
+   "token":{  
+      "nis":11005,
+      "gemeente":"Boom",
+      "gemeente_nl":"Boom",
+      "gemeente_fr":"Boom"
+   },
+   "data":{  
+      "Motorfiets":"17",
+      "Bus":"2",
+      "Andere":"3",
+      "Fiets":"28",
+      "Vrachtwagen":"3",
+      "Wagen":"36",
+      "Voetganger":"12"
+   }
+}

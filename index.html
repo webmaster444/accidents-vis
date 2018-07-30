@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style> 
+
+.bar { fill: steelblue; }
+
+</style>
+<body>    	
+<script src="//d3js.org/d3.v4.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script>
+  var data_url1  = '11002.json';
+  var data_url2  = '11004.json';
+  
+  queue()
+  .defer(d3.json, data_url1)
+  .defer(d3.json, data_url2)  
+  .await(makeMyMap);
+
+  var city1_data = [];
+  var city2_data = [];
+
+  function makeMyMap(error, city1,city2){  
+    var json_data = city1['data'];
+    var json2_data = city2['data'];
+    var keys = Object.keys(json_data);
+    
+    keys.forEach(function(key){    
+      var tmp = new Object;
+      tmp['key'] = key;
+      tmp['value'] = json_data[key];    
+      city1_data.push(tmp);
+
+      var tmp1 = new Object;
+      tmp1['key'] = key;
+      tmp1['value'] = json2_data[key];    
+      city2_data.push(tmp1);
+    });
+
+    draw_chart(city1_data);
+    draw_chart(city2_data);
+  }
+
+function draw_chart(data,wrapper){
+// set the dimensions and margins of the graph
+var margin = {top: 20, right: 20, bottom: 30, left: 80},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// set the ranges
+var y = d3.scaleBand()
+          .range([height, 0])
+          .padding(0.1);
+
+var x = d3.scaleLinear()
+          .range([0, width]);
+          
+// append the svg object to the body of the page
+// append a 'group' element to 'svg'
+// moves the 'group' element to the top left margin
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", 
+          "translate(" + margin.left + "," + margin.top + ")");
+
+  // format the data
+  data.forEach(function(d) {
+    d.value = +d.value;
+  });
+
+  // Scale the range of the data in the domains
+  x.domain([0, d3.max(data, function(d){ return d.value; })])
+  y.domain(data.map(function(d) { return d.key; }));
+  //y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+  // append the rectangles for the bar chart
+  svg.selectAll(".bar")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "bar")
+      //.attr("x", function(d) { return x(d.value); })
+      .attr("width", function(d) {return x(d.value); } )
+      .attr("y", function(d) { return y(d.key); })
+      .attr("height", y.bandwidth());
+
+  // add the x Axis
+  svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+
+  // add the y Axis
+  svg.append("g")
+      .call(d3.axisLeft(y));
+
+}
+</script>
+</body>
