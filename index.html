@@ -2,7 +2,16 @@
 <meta charset="utf-8">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <style> 
+path.domain{
+  display: none;
+}
+.tick text{
+  display: none;
+}
 
+.tick line{  
+  stroke: #ccc;
+}
 </style>
 <body>    	
 <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -34,6 +43,7 @@
     "Motorfiets":'images/Motorfiets.png',
     "Bus":'images/Bus.png',
     "Fiets":'images/Fiets.png',
+    "Andere":'images/Other.png',
     "Vrachtwagen":'images/Vrachtwagen.png',
     "Wagen":'images/Wagen.png',
     "Voetganger":'images/Voetganger.png'
@@ -90,7 +100,7 @@ var y = d3.scaleBand()
 
 var x = d3.scaleLinear()
           .range([0, width]);
-          
+
 // append the svg object to the body of the page
 // append a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
@@ -101,6 +111,14 @@ var svg = d3.select(wrapper).append("svg")
     .attr("transform", 
           "translate(" + margin.left + "," + margin.top + ")");
 
+  // add the x Axis
+  svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x).tickSize(-height));
+
+  // add the y Axis
+  svg.append("g")
+      .call(d3.axisLeft(y).ticks('').tickSize(0));
   // format the data
   data.forEach(function(d) {
     d.value = +d.value;
@@ -149,15 +167,6 @@ var svg = d3.select(wrapper).append("svg")
     .attr("height", 50)
     .attr("x", -70)
     .attr("y",function(d){return y(d.key)});
-  // add the x Axis
-  svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
-
-  // add the y Axis
-  svg.append("g")
-      .call(d3.axisLeft(y));
-
 }
 </script>
 </body>
