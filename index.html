@@ -1,21 +1,36 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <style> 
-
-.bar { fill: steelblue; }
 
 </style>
 <body>    	
-  <div id="chart1"></div>
-  <div id="chart2"></div>
-  <div id="chart3"></div>
-  <div id="chart4"></div>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="chart1-tab" data-toggle="tab" href="#chart1" role="tab" aria-controls="Chart 1" aria-selected="true">Chart 1</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="chart2-tab" data-toggle="tab" href="#chart2" role="tab" aria-controls="Chart 2" aria-selected="false">Chart 2</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="chart3-tab" data-toggle="tab" href="#chart3" role="tab" aria-controls="Chart 3" aria-selected="false">Chart 3</a>
+  </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+  <div class="tab-pane fade show active" id="chart1" role="tabpanel" aria-labelledby="chart1-tab"></div>
+  <div class="tab-pane fade" id="chart2" role="tabpanel" aria-labelledby="chart2-tab"></div>
+  <div class="tab-pane fade" id="chart3" role="tabpanel" aria-labelledby="chart3-tab"></div>
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script src="//d3js.org/queue.v1.min.js"></script>
 <script>
-  var data_url1  = '11002.json';
-  var data_url2  = '11004.json';
+  var data_url1  = '11004.json';
+  var data_url2  = '11002.json';
   
+  var color = d3.scaleOrdinal().range(["#5DDEC9", "#EF64AD", "#7b6888", "#BA67E5", "#E0E23B", "#d0743c", "#ff8c00"]);
   queue()
   .defer(d3.json, data_url1)
   .defer(d3.json, data_url2)  
@@ -28,7 +43,8 @@
     var json_data = city1['data'];
     var json2_data = city2['data'];
     var keys = Object.keys(json_data);
-    
+    // colorScale.domain(keys);
+
     keys.forEach(function(key){    
       var tmp = new Object;
       tmp['key'] = key;
@@ -44,16 +60,17 @@
     var x = d3.max([d3.max(city1_data.map(function(d){
       return parseInt(d.value);
     })),d3.max(city2_data.map(function(d){
-      return d.value;
+      return parseInt(d.value);
     }))]);
     
-    draw_chart(city1_data,'#chart1',x);
+    draw_chart(city1_data,'#chart1');
+    draw_chart(city1_data,'#chart2',x);
     draw_chart(city2_data,'#chart2',x);
   }
 
 function draw_chart(data,wrapper,maxvalue){
 // set the dimensions and margins of the graph
-var margin = {top: 20, right: 20, bottom: 30, left: 80},
+var margin = {top: 20, right: 60, bottom: 30, left: 80},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -81,22 +98,37 @@ var svg = d3.select(wrapper).append("svg")
   });
 
   // Scale the range of the data in the domains
-  x.domain([0, maxvalue])
+  if(maxvalue==undefined){
+    x.domain([0,(d3.max(data.map(function(d){return d.value}))+5)]);
+  }else{    
+    x.domain([0, (maxvalue+5)])  
+  }
+  
   y.domain(data.map(function(d) { return d.key; }));
   //y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
   // append the rectangles for the bar chart
-  svg.selectAll(".bar")
+  var bar_wrapper = svg.selectAll(".bar")
       .data(data)
-    .enter().append("rect")
+    .enter();
+
+  bar_wrapper.append("rect")
       .attr("class", "bar")
       //.attr("x", function(d) { return x(d.value); })
       .attr("y", function(d) { return y(d.key); })
       .attr("height", y.bandwidth())
+      .attr('fill',function(d){
+        return color(d.key);
+      })
       .transition()
       .duration(2000)
       .attr("width", function(d) {return x(d.value); } )          
 
+  bar_wrapper.append('text').attr('class','label').attr('x',function(d){return x(d.value)+5})
+  .attr('y',function(d){return y(d.key)+y.bandwidth()/2+5}).style('opacity',0).attr('fill',function(d){return color(d.key)}).transition()  
+  .duration(2000)
+  .style('opacity',1)
+  .text(function(d){return d.value});  
   // add the x Axis
   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
