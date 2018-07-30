@@ -5,7 +5,7 @@
 path.domain{
   display: none;
 }
-.tick text{
+.yaxis .tick text{
   display: none;
 }
 
@@ -49,6 +49,7 @@ path.domain{
     "Voetganger":'images/Voetganger.png'
   }];
 
+  var max_value;
   var color = d3.scaleOrdinal().range(["#5DDEC9", "#EF64AD", "#7b6888", "#BA67E5", "#E0E23B", "#d0743c", "#ff8c00"]);
   queue()
   .defer(d3.json, data_url1)
@@ -76,15 +77,15 @@ path.domain{
       city2_data.push(tmp1);
     });
 
-    var x = d3.max([d3.max(city1_data.map(function(d){
+    max_value = d3.max([d3.max(city1_data.map(function(d){
       return parseInt(d.value);
     })),d3.max(city2_data.map(function(d){
       return parseInt(d.value);
     }))]);
     
     draw_chart(city1_data,'#chart1');
-    draw_chart(city1_data,'#chart2',x);
-    draw_chart(city2_data,'#chart2',x);
+    // draw_chart(city1_data,'#chart2',x);
+    // draw_chart(city2_data,'#chart2',x);
   }
 
 function draw_chart(data,wrapper,maxvalue){
@@ -111,14 +112,6 @@ var svg = d3.select(wrapper).append("svg")
     .attr("transform", 
           "translate(" + margin.left + "," + margin.top + ")");
 
-  // add the x Axis
-  svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x).tickSize(-height));
-
-  // add the y Axis
-  svg.append("g")
-      .call(d3.axisLeft(y).ticks('').tickSize(0));
   // format the data
   data.forEach(function(d) {
     d.value = +d.value;
@@ -133,6 +126,16 @@ var svg = d3.select(wrapper).append("svg")
   
   y.domain(data.map(function(d) { return d.key; }));
   //y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+  // add the x Axis
+  svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .attr('class','xaxis')
+      .call(d3.axisBottom(x).tickSize(-height));
+
+  // add the y Axis
+  svg.append("g").attr('class','yaxis')
+      .call(d3.axisLeft(y).tickSize(0));
 
   // append the rectangles for the bar chart
   var bar_wrapper = svg.selectAll(".bar")
@@ -168,5 +171,22 @@ var svg = d3.select(wrapper).append("svg")
     .attr("x", -70)
     .attr("y",function(d){return y(d.key)});
 }
+
+$('.nav-link').on('click',function(){
+  var clicked_id = $(this).attr('id');
+  $('svg').remove();
+  switch(clicked_id){
+    case "chart1-tab":
+      draw_chart(city1_data,'#chart1');
+    break;
+    case "chart2-tab":
+      draw_chart(city1_data,'#chart2',max_value);
+      draw_chart(city2_data,'#chart2',max_value);
+    break;
+    case"chart3-tab":
+    
+    break;    
+  }
+})
 </script>
 </body>
