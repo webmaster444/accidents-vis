@@ -30,6 +30,15 @@
   var data_url1  = '11004.json';
   var data_url2  = '11002.json';
   
+  var icon_urls = [{
+    "Motorfiets":'images/Motorfiets.png',
+    "Bus":'images/Bus.png',
+    "Fiets":'images/Fiets.png',
+    "Vrachtwagen":'images/Vrachtwagen.png',
+    "Wagen":'images/Wagen.png',
+    "Voetganger":'images/Voetganger.png'
+  }];
+
   var color = d3.scaleOrdinal().range(["#5DDEC9", "#EF64AD", "#7b6888", "#BA67E5", "#E0E23B", "#d0743c", "#ff8c00"]);
   queue()
   .defer(d3.json, data_url1)
@@ -129,6 +138,17 @@ var svg = d3.select(wrapper).append("svg")
   .duration(2000)
   .style('opacity',1)
   .text(function(d){return d.value});  
+
+  bar_wrapper.append("svg:image")
+    .attr("xlink:href", function(d){      
+      if(icon_urls[0][d.key]!='undefined'){
+        return icon_urls[0][d.key];
+      }
+    })
+    .attr("width", 50)
+    .attr("height", 50)
+    .attr("x", -70)
+    .attr("y",function(d){return y(d.key)});
   // add the x Axis
   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
